@@ -8,7 +8,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 
 
-class MinimalPublisher(Node):
+class TurtleBotTeleop(Node):
 
     def __init__(self):
         super().__init__('turtle_bot_teleop')
@@ -19,6 +19,10 @@ class MinimalPublisher(Node):
         self.angular = float(input("Ingrese la velocidad angular: "))
     
     def on_presss(self, key):
+
+        if not(hasattr(key, 'char')): 
+            self.get_logger().info('Invalid input')
+            return # evitar que muera la terminal
         
         if key.char == 'w':
 
@@ -39,14 +43,14 @@ class MinimalPublisher(Node):
             msg = Twist()
             msg.angular.z=self.angular
             self.publisher_.publish(msg)
-            self.get_logger().info('Publishing: Derecha')
+            self.get_logger().info('Publishing: Izquierda')
 
         elif key.char == 'd':
 
             msg = Twist()
             msg.angular.z=-self.angular
             self.publisher_.publish(msg)
-            self.get_logger().info('Publishing: Izquierda')
+            self.get_logger().info('Publishing: Derecha')
         
         
     def on_releasee(self, key):
@@ -62,14 +66,14 @@ class MinimalPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     
-    minimal_publisher = MinimalPublisher()
+    teleop = TurtleBotTeleop()
 
-    rclpy.spin(minimal_publisher)
+    rclpy.spin(teleop)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    minimal_publisher.destroy_node()
+    teleop.destroy_node()
     rclpy.shutdown()
 
 

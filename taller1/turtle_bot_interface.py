@@ -5,8 +5,9 @@ from rclpy.node import Node
 
 from geometry_msgs.msg import Twist
 
+coords = []
 
-class MinimalSubscriber(Node):
+class TurtleBotInterface(Node):
 
     def __init__(self):
         super().__init__('turtle_bot_interface')
@@ -25,11 +26,10 @@ class MinimalSubscriber(Node):
         pygame.display.flip()
         self.button1 = Button('Guardar', 100,20,(50,525),self.screen)
         self.pos_actual = [250,250]
-
-        
-
+    
 
     def listener_callback(self, msg):
+        global coords
 
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
@@ -48,10 +48,10 @@ class MinimalSubscriber(Node):
             pygame.draw.line(self.screen, (60,179,113), self.pos_actual,nuevas,5)
             pygame.display.update()
             self.pos_actual = nuevas
-    
+            self.get_logger().info(f"Coordenadas: [{nuevas[0]}]")
+            coords.append(nuevas[0]) # guardar las coordenadas en el archivo
 
     def cordenates(self,linearx,lineary):
-
         if linearx>0:
             x = 250+linearx*100
         else:
@@ -61,7 +61,6 @@ class MinimalSubscriber(Node):
         else:
             y = 250-lineary*100
         return (x,y)
-
 
 class Button:
     def __init__(self,text,width,height,pos,screen):
@@ -91,19 +90,18 @@ class Button:
                     return False
         return True
 
-
 def main(args=None):
     rclpy.init(args=args)
     pygame.init()
 
-    minimal_subscriber = MinimalSubscriber()
+    interface = TurtleBotInterface()
 
-    rclpy.spin(minimal_subscriber)
+    rclpy.spin(interface)
 
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    minimal_subscriber.destroy_node()
+    interface.destroy_node()
     rclpy.shutdown()
 
 
