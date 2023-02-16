@@ -2,14 +2,13 @@ import rclpy
 import pygame
 
 from rclpy.node import Node
-
 from geometry_msgs.msg import Twist
-
-coords = []
 
 class TurtleBotInterface(Node):
 
     def __init__(self):
+
+        #Inicializar el subscriber
         super().__init__('turtle_bot_interface')
         self.subscription = self.create_subscription(
             Twist,
@@ -18,38 +17,73 @@ class TurtleBotInterface(Node):
             10)
         self.subscription  # prevent unused variable warning
 
-        #Initialize pygame window
-        (width, height) = (500,550)
-        background_color = (255,255,255)
-        self.screen = pygame.display.set_mode((width,height))
-        self.screen.fill(background_color)
-        pygame.display.flip()
-        self.button1 = Button('Guardar', 100,20,(50,525),self.screen)
+        #Definicion de variables
         self.pos_actual = [250,250]
-    
+        self.coords = []
+        self.background_color = (255,255,255)
+
+        #Initialize pygame window
+        self.screen = pygame.display.set_mode((500,550))
+        self.screen.fill(self.background_color)
+
+        #Display button
+        self.button1 = Button('Guardar', 100,20,(50,525),self.screen)
+        self.button1.draw()
+
+        #Input text
+        self.user_text = 'Grafica 1'
+        self.input_rect = pygame.Rect((20,20), (400, 50))
+        self.input_state = False
+
+
+        
 
     def listener_callback(self, msg):
-        global coords
 
-        for event in pygame.event.get():  # User did something
-            if event.type == pygame.QUIT:  # If user clicked close
+
+        #Para que no se muera pygame 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: 
                 self.get_logger().info("Chao")
                 pygame.quit()
 
-        self.button1.draw()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.input_rect.collidepoint(event.pos):
+                    self.input_state = True   
+                else:
+                    self.input_state = False
 
+            if event.type == pygame.KEYDOWN and self.input_state:
+                if event.key == pygame.K_BACKSPACE:
+                    self.user_text = self.user_text[:-1]
+                else:
+                    if self.text_surface.get_width()<350:
+                        self.user_text += event.unicode
+
+        
+        #Nombre de la grafica
+        pygame.draw.rect(self.screen, (255,100,200), self.input_rect) 
+        self.text_surface = pygame.font.Font(None, 40).render(self.user_text, True, '#475F77')
+        self.screen.blit(self.text_surface, (self.input_rect.x + ((400-self.text_surface.get_width())/2), self.input_rect.y + 10))
+
+
+        #Guardar Imagen del camino
         if not self.button1.check_click():
             self.get_logger().info("Presionado")
 
 
+
+
+        #Dibujar el camino robot
         if self.pos_actual != (msg.linear.x, msg.linear.y):
 
             nuevas = self.cordenates(msg.linear.x, msg.linear.y)
             pygame.draw.line(self.screen, (60,179,113), self.pos_actual,nuevas,5)
             pygame.display.update()
             self.pos_actual = nuevas
-            self.get_logger().info(f"Coordenadas: [{nuevas[0]}]")
-            coords.append(nuevas[0]) # guardar las coordenadas en el archivo
+            #self.get_logger().info(f"Coordenadas: [{nuevas[0]}]")
+            self.coords.append(nuevas) # guardar las coordenadas en el archivo
+
 
     def cordenates(self,linearx,lineary):
         if linearx>0:
@@ -61,6 +95,8 @@ class TurtleBotInterface(Node):
         else:
             y = 250-lineary*100
         return (x,y)
+
+
 
 class Button:
     def __init__(self,text,width,height,pos,screen):
@@ -90,17 +126,16 @@ class Button:
                     return False
         return True
 
+
+
+
+
 def main(args=None):
     rclpy.init(args=args)
     pygame.init()
-
     interface = TurtleBotInterface()
-
     rclpy.spin(interface)
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     interface.destroy_node()
     rclpy.shutdown()
 
