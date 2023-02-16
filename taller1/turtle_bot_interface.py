@@ -23,7 +23,7 @@ class MinimalSubscriber(Node):
         self.screen = pygame.display.set_mode((width,height))
         self.screen.fill(background_color)
         pygame.display.flip()
-        self.button1 = Button('Click', 100,20,(50,525),self.screen)
+        self.button1 = Button('Guardar', 100,20,(50,525),self.screen)
         self.pos_actual = [250,250]
 
         
@@ -76,7 +76,7 @@ class Button:
         self.text_rect = self.text_surface.get_rect(center = self.top_rect.center)
 
     def draw(self):
-        pygame.draw.rect(self.screen, self.top_color, self.top_rect, border_radius=12)
+        pygame.draw.rect(self.screen, self.top_color, self.top_rect, border_radius=5)
         self.screen.blit(self.text_surface, self.text_rect)
 
     def check_click(self):
