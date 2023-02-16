@@ -22,10 +22,10 @@ class MinimalPublisher(Node):
         
         if key.char == 'w':
 
-    	    msg = Twist()
-    	    msg.linear.x=self.linear
-    	    self.publisher_.publish(msg)
-    	    self.get_logger().info('Publishing:  Adelante')
+            msg = Twist()
+            msg.linear.x=self.linear
+            self.publisher_.publish(msg)
+            self.get_logger().info('Publishing:  Adelante')
 
         elif key.char == 's':
 
@@ -47,16 +47,16 @@ class MinimalPublisher(Node):
             msg.angular.z=-self.angular
             self.publisher_.publish(msg)
             self.get_logger().info('Publishing: Izquierda')
-    	
+        
         
     def on_releasee(self, key):
-       	msg = Twist()
-       	msg.linear.x=0.0
+        msg = Twist()
+        msg.linear.x=0.0
         msg.angular.z=0.0
-       	self.publisher_.publish(msg)
-       	self.get_logger().info('Publishing: Stop')
-    		
-    	
+        self.publisher_.publish(msg)
+        self.get_logger().info('Publishing: Stop')
+            
+        
 
 
 def main(args=None):
