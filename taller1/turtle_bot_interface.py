@@ -23,17 +23,21 @@ class TurtleBotInterface(Node):
         self.background_color = (255,255,255)
 
         #Initialize pygame window
-        self.screen = pygame.display.set_mode((500,550))
+        self.screen = pygame.display.set_mode((550,600))
         self.screen.fill(self.background_color)
 
         #Display button
-        self.button1 = Button('Guardar', 100,20,(50,525),self.screen)
+        self.button1 = Button('Guardar', 120,35,(25,550),self.screen)
         self.button1.draw()
 
         #Input text
         self.user_text = 'Grafica 1'
-        self.input_rect = pygame.Rect((20,20), (400, 50))
+        self.input_rect = pygame.Rect((25,10), (500, 30))
         self.input_state = False
+
+        #Rectangulo Area de juego
+        self.area_rect = pygame.Rect((25,45), (500, 500))
+
 
 
         
@@ -44,8 +48,7 @@ class TurtleBotInterface(Node):
         #Para que no se muera pygame 
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
-                self.get_logger().info("Chao")
-                pygame.quit()
+                pygame.quit() #Cerrar la ventana 
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.input_rect.collidepoint(event.pos):
@@ -60,11 +63,18 @@ class TurtleBotInterface(Node):
                     if self.text_surface.get_width()<350:
                         self.user_text += event.unicode
 
+        #Area de juego
+
+        pygame.draw.rect(self.screen, '#9b9b9b', self.area_rect, 5) 
         
         #Nombre de la grafica
-        pygame.draw.rect(self.screen, (255,100,200), self.input_rect) 
-        self.text_surface = pygame.font.Font(None, 40).render(self.user_text, True, '#475F77')
-        self.screen.blit(self.text_surface, (self.input_rect.x + ((400-self.text_surface.get_width())/2), self.input_rect.y + 10))
+        if self.input_state:
+            pygame.draw.rect(self.screen, '#9b9b9b', self.input_rect) 
+        else:
+            pygame.draw.rect(self.screen, (255,255,255), self.input_rect) 
+
+        self.text_surface = pygame.font.Font(None, 35).render(self.user_text, True, '#475F77')
+        self.screen.blit(self.text_surface, (self.input_rect.x + ((500-self.text_surface.get_width())/2), self.input_rect.y + 2.5))
 
 
         #Guardar Imagen del camino
@@ -87,13 +97,13 @@ class TurtleBotInterface(Node):
 
     def cordenates(self,linearx,lineary):
         if linearx>0:
-            x = 250+linearx*100
+            x = 25+250+linearx*100
         else:
-            x = 250+linearx*100
+            x = 25+250+linearx*100
         if lineary>0:
-            y = 250-lineary*100
+            y = 45+250-lineary*100
         else:
-            y = 250-lineary*100
+            y = 45+250-lineary*100
         return (x,y)
 
 
@@ -107,7 +117,7 @@ class Button:
         self.top_color = '#475F77'
 
         #Texto Boton
-        self.text_surface = pygame.font.Font(None, 20).render(text, True, '#FFFFFF')
+        self.text_surface = pygame.font.Font(None, 25).render(text, True, '#FFFFFF')
         self.text_rect = self.text_surface.get_rect(center = self.top_rect.center)
 
     def draw(self):
