@@ -1,6 +1,8 @@
 import rclpy
 import pygame
+import tkinter as tk
 
+from tkinter import filedialog
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 
@@ -25,7 +27,8 @@ class TurtleBotInterface(Node):
         #Initialize pygame window
         self.screen = pygame.display.set_mode((550,600))
         self.screen.fill(self.background_color)
-
+        
+       
         #Display button
         self.button1 = Button('Guardar', 120,35,(25,560),self.screen)
         self.button1.draw()
@@ -38,8 +41,6 @@ class TurtleBotInterface(Node):
         #Rectangulo Area de juego
         self.area_rect = pygame.Rect((25,50), (500, 500))
 
-
-
         
 
     def listener_callback(self, msg):
@@ -48,7 +49,7 @@ class TurtleBotInterface(Node):
         #Para que no se muera pygame 
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
-                pygame.quit() #Cerrar la ventana 
+                pygame.quit() #Cerrar la ventana
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.input_rect.collidepoint(event.pos):
@@ -80,10 +81,11 @@ class TurtleBotInterface(Node):
         #Guardar Imagen del camino
         if not self.button1.check_click():
             self.get_logger().info("Presionado")
-
-
-
-
+            file_path =filedialog.asksaveasfilename(defaultextension=".png",
+            filetypes=[("PNG Image", "*.png"), ("All Files", "*.*")])
+            pygame.image.save(self.screen, file_path)
+        
+        
         #Dibujar el camino robot
         if self.pos_actual != (msg.linear.x, msg.linear.y):
 
@@ -105,8 +107,6 @@ class TurtleBotInterface(Node):
         else:
             y = 300-lineary*100
         return (x,y)
-
-
 
 class Button:
     def __init__(self,text,width,height,pos,screen):
@@ -135,8 +135,8 @@ class Button:
                     self.pressed = False
                     return False
         return True
-
-
+        
+        
 
 
 
