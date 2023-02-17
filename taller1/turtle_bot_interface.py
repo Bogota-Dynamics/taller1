@@ -27,7 +27,7 @@ class TurtleBotInterface(Node):
         self.screen.fill(self.background_color)
 
         #Display button
-        self.button1 = Button('Guardar', 120,35,(25,550),self.screen)
+        self.button1 = Button('Guardar', 120,35,(25,560),self.screen)
         self.button1.draw()
 
         #Input text
@@ -36,7 +36,7 @@ class TurtleBotInterface(Node):
         self.input_state = False
 
         #Rectangulo Area de juego
-        self.area_rect = pygame.Rect((25,45), (500, 500))
+        self.area_rect = pygame.Rect((25,50), (500, 500))
 
 
 
