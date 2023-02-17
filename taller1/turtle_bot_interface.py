@@ -18,7 +18,7 @@ class TurtleBotInterface(Node):
         self.subscription  # prevent unused variable warning
 
         #Definicion de variables
-        self.pos_actual = [250,250]
+        self.pos_actual = [275,300]
         self.coords = []
         self.background_color = (255,255,255)
 
@@ -97,13 +97,13 @@ class TurtleBotInterface(Node):
 
     def cordenates(self,linearx,lineary):
         if linearx>0:
-            x = 25+250+linearx*100
+            x = 275+linearx*100
         else:
-            x = 25+250+linearx*100
+            x = 275+linearx*100
         if lineary>0:
-            y = 45+250-lineary*100
+            y = 300-lineary*100
         else:
-            y = 45+250-lineary*100
+            y = 300-lineary*100
         return (x,y)
 
 
