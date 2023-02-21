@@ -1,6 +1,7 @@
 import rclpy
 import pygame
 import tkinter as tk
+from threading import Thread
 
 from tkinter import filedialog
 from rclpy.node import Node
@@ -80,12 +81,11 @@ class TurtleBotInterface(Node):
 
         #Guardar Imagen del camino
         if not self.button1.check_click():
-            self.get_logger().info("Presionado")
-            file_path =filedialog.asksaveasfilename(defaultextension=".png",
-            filetypes=[("PNG Image", "*.png"), ("All Files", "*.*")])
-            pygame.image.save(self.screen, file_path)
-        
-        
+            self.get_logger().info("Guardar Imagen")
+            tkthread = Thread(target=tk_open_dialog, args=(self,))
+            tkthread.start()
+
+
         #Dibujar el camino robot
         if self.pos_actual != (msg.linear.x, msg.linear.y):
 
@@ -107,6 +107,15 @@ class TurtleBotInterface(Node):
         else:
             y = 300-lineary*100
         return (x,y)
+
+def tk_open_dialog(interface):
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".png",
+        filetypes=[
+            ("PNG Image", "*.png"), 
+            ("All Files", "*.*")
+        ])
+    pygame.image.save(interface.screen, file_path)
 
 class Button:
     def __init__(self,text,width,height,pos,screen):
