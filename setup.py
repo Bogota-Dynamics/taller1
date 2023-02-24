@@ -15,8 +15,8 @@ setup(
     zip_safe=True,
     maintainer='robotica',
     maintainer_email='robotica@todo.todo',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='Bogota-Dynamics',
+    license='Bogota-Dynamics',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

@@ -6,6 +6,7 @@ from threading import Thread
 from tkinter import filedialog
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
+from my_msgs.srv import SaveMotions
 
 class TurtleBotInterface(Node):
 
@@ -18,7 +19,8 @@ class TurtleBotInterface(Node):
             'turtlebot_position',
             self.listener_callback,
             10)
-        self.subscription  # prevent unused variable warning
+        
+        self.client = self.create_client(SaveMotions, 'save_motion')
 
         #Definicion de variables
         self.pos_actual = [275,300]
@@ -30,12 +32,16 @@ class TurtleBotInterface(Node):
         self.screen.fill(self.background_color)
         
        
-        #Display button
-        self.button1 = Button('Guardar', 120,35,(25,560),self.screen)
+        #Display button save draw
+        self.button1 = Button('Guardar Imagen', 180,35,(60,560),self.screen)
         self.button1.draw()
 
+        #Display button save motion
+        self.button2 = Button('Guardar Recorrido', 180,35,(310,560),self.screen)
+        self.button2.draw()
+
         #Input text
-        self.user_text = 'Grafica 1'
+        self.user_text = 'Robot'
         self.input_rect = pygame.Rect((25,10), (500, 30))
         self.input_state = False
 
@@ -45,7 +51,6 @@ class TurtleBotInterface(Node):
         
 
     def listener_callback(self, msg):
-
 
         #Para que no se muera pygame 
         for event in pygame.event.get():
@@ -66,7 +71,6 @@ class TurtleBotInterface(Node):
                         self.user_text += event.unicode
 
         #Area de juego
-
         pygame.draw.rect(self.screen, '#9b9b9b', self.area_rect, 5) 
         
         #Nombre de la grafica
@@ -82,13 +86,17 @@ class TurtleBotInterface(Node):
         #Guardar Imagen del camino
         if not self.button1.check_click():
             self.get_logger().info("Guardar Imagen")
-            tkthread = Thread(target=tk_open_dialog, args=(self,))
+            tkthread = Thread(target=tk_open_dialog_thread, args=(self,))
             tkthread.start()
-
+        
+        #Guardar Recorrido
+        if not self.button2.check_click():
+            self.get_logger().info("Guardar Recorrido")
+            mtThread = Thread(target=save_motion_thread, args=(self,))
+            mtThread.start()
 
         #Dibujar el camino robot
         if self.pos_actual != (msg.linear.x, msg.linear.y):
-
             nuevas = self.cordenates(msg.linear.x, msg.linear.y)
             pygame.draw.line(self.screen, (60,179,113), self.pos_actual,nuevas,5)
             pygame.display.update()
@@ -108,7 +116,7 @@ class TurtleBotInterface(Node):
             y = 300-lineary*100
         return (x,y)
 
-def tk_open_dialog(interface):
+def tk_open_dialog_thread(interface:TurtleBotInterface):
     file_path = filedialog.asksaveasfilename(
         defaultextension=".png",
         filetypes=[
@@ -117,8 +125,24 @@ def tk_open_dialog(interface):
         ])
     pygame.image.save(interface.screen, file_path)
 
+def save_motion_thread(interface:TurtleBotInterface):
+    while not interface.client.wait_for_service(timeout_sec=1.0):
+        interface.get_logger().info('service not available, waiting again...')
+
+    request = SaveMotions.Request()
+    request.filename = interface.user_text
+    interface.get_logger().info('Calling service...')
+    future = interface.client.call_async(request)
+    rclpy.spin_until_future_complete(interface, future)
+
+    if future.result() is not None:
+        interface.get_logger().info(f"Result saved at: {future.result().path}")
+    else:
+        interface.get_logger().info("Service call failed %r" % (future.exception(),))
+
+
 class Button:
-    def __init__(self,text,width,height,pos,screen):
+    def __init__(self,text,width,height,pos,screen,fontsize=25):
         self.screen = screen
         self.pressed = False
         #Top rectangle
@@ -126,7 +150,7 @@ class Button:
         self.top_color = '#475F77'
 
         #Texto Boton
-        self.text_surface = pygame.font.Font(None, 25).render(text, True, '#FFFFFF')
+        self.text_surface = pygame.font.Font(None, fontsize).render(text, True, '#FFFFFF')
         self.text_rect = self.text_surface.get_rect(center = self.top_rect.center)
 
     def draw(self):
@@ -144,15 +168,13 @@ class Button:
                     self.pressed = False
                     return False
         return True
-        
-        
-
 
 
 def main(args=None):
     rclpy.init(args=args)
     pygame.init()
     interface = TurtleBotInterface()
+
     rclpy.spin(interface)
 
     interface.destroy_node()
