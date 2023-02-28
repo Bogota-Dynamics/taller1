@@ -21,6 +21,7 @@ class TurtleBotInterface(Node):
             10)
         
         self.client = self.create_client(SaveMotions, 'save_motion')
+        self.client2 = self.create_client(SaveMotions, 'recreate_motion')
 
         #Definicion de variables
         self.pos_actual = [275,300]
@@ -33,12 +34,16 @@ class TurtleBotInterface(Node):
         
        
         #Display button save draw
-        self.button1 = Button('Guardar Imagen', 180,35,(60,560),self.screen)
+        self.button1 = Button('Guardar Imagen', 150,35,(10,560),self.screen)
         self.button1.draw()
 
         #Display button save motion
-        self.button2 = Button('Guardar Recorrido', 180,35,(310,560),self.screen)
+        self.button2 = Button('Guardar Recorrido', 180,35,(170,560),self.screen)
         self.button2.draw()
+
+        #Display button recreate motion
+        self.button3 = Button('Recrear Recorrido', 180,35,(360,560),self.screen)
+        self.button3.draw()
 
         #Input text
         self.user_text = 'Robot'
@@ -95,6 +100,12 @@ class TurtleBotInterface(Node):
             mtThread = Thread(target=save_motion_thread, args=(self,))
             mtThread.start()
 
+        #Guardar Recorrido
+        if not self.button3.check_click():
+            self.get_logger().info("Recrear Recorrido")
+            mkmtThread = Thread(target=recreate_motion_thread, args=(self,))
+            mkmtThread.start()
+
         #Dibujar el camino robot
         if self.pos_actual != (msg.linear.x, msg.linear.y):
             nuevas = self.cordenates(msg.linear.x, msg.linear.y)
@@ -140,6 +151,21 @@ def save_motion_thread(interface:TurtleBotInterface):
     #else:
     #    interface.get_logger().info("Service call failed %r" % (future.exception(),))
 
+
+def recreate_motion_thread(interface:TurtleBotInterface):
+    while not interface.client.wait_for_service(timeout_sec=1.0):
+        interface.get_logger().info('service not available, waiting again...')
+
+    request = SaveMotions.Request()
+    request.filename = interface.user_text
+    interface.get_logger().info('Calling service...')
+    future = interface.client2.call_async(request)
+    #rclpy.spin_until_future_complete(interface, future)
+
+    #if future.result() is not None:
+    #    interface.get_logger().info(f"Result recreated from: {future.result().path}")
+    #else:
+    #    interface.get_logger().info("Service call failed %r" % (future.exception(),))
 
 class Button:
     def __init__(self,text,width,height,pos,screen,fontsize=25):

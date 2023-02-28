@@ -66,8 +66,8 @@ class TurtleBotPlayer(Node):
                 else:
                     self.get_logger().info(f'...')
                     continue
-                # Los mensajes se publican cada 0.03 segundos aproximadamente
-                while (time.time() - start) < 0.0306: pass
+                # Los mensajes se publican cada 0.04 segundos aproximadamente
+                while (time.time() - start) < 0.04: pass
                 self.publisher_.publish(msg)
 
         msg = Twist()
