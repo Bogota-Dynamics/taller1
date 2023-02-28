@@ -74,9 +74,11 @@ Finalmente, para recrear un recorrido de un archivo TXT guardado en el punto ant
 ros2 run taller1 turtle_bot_player
 ```
 
-Este nodo implementa el servicio `recreate_motion`, por lo cual no se deplegará nada en pantalla hasta que se llame el servicio.
+Este nodo implementa el servicio `recreate_motion`, por lo cual no se deplegará nada en pantalla hasta que se llame el servicio. Reinicie la simulación y luego para llamar el servicio de recrear un recorrido, desde la interfaz cambie el título de la gráfica por el mismo que tenía el recorrido que se desea recrear (e.i. "Robot") y luego presione el botón `Recrear recorrido`. 
 
-Posteriormente, reinicie la simulación en CoppeliaSim y en otra consola llame el servicio expuesto por el nodo player, en donde indicará el nombre del recorrido guardado que desea recrear (e.i. "Robot"). Para llamar el servicio ejecute el siguiente comando, reemplazando "Robot" por el nombre de la gráfica que tenía el recorrido que guardó.
+Otra forma de llamar el servicio es desde una nueva consola:
+
+En otra consola llame el servicio expuesto por el nodo player, en donde indicará el nombre del recorrido guardado que desea recrear (e.i. "Robot"). Para llamar el servicio ejecute el siguiente comando, reemplazando "Robot" por el nombre de la gráfica que tenía el recorrido que guardó.
 
 ```bash
 . install/setup.bash
