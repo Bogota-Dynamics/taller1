@@ -12,6 +12,7 @@
   <exec_depend>my_msgs</exec_depend>
   <exec_depend>pynput</exec_depend>
   <exec_depend>pygame</exec_depend>
+  <exec_depend>time</exec_depend>
   <exec_depend>tkinter</exec_depend>
   <exec_depend>threading</exec_depend>
   <exec_depend>os</exec_depend>

@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
         	'turtle_bot_teleop = taller1.turtle_bot_teleop:main',
-        	'turtle_bot_interface = taller1.turtle_bot_interface:main'
+        	'turtle_bot_interface = taller1.turtle_bot_interface:main',
+            'turtle_bot_player = taller1.turtle_bot_player:main'
         ],
     },
 )

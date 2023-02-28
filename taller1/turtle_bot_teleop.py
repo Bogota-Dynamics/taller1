@@ -2,7 +2,7 @@ import rclpy
 import pynput
 
 from pynput import keyboard
-
+import time
 from rclpy.node import Node
 from my_msgs.srv import SaveMotions
 from os.path import abspath
@@ -19,12 +19,13 @@ class TurtleBotTeleop(Node):
         listener.start()
         self.linear = float(input("Ingrese la velocidad lineal: "))
         self.angular = float(input("Ingrese la velocidad angular: "))
-        self.motion = '' # lista de movimientos
+        self.motion = f'{self.linear},{self.angular}\n' # lista de movimientos
+        self.lastStopped = 0
         # crear un servicio que guarde la lista de movimientos en un archivo txt
         self.service = self.create_service(SaveMotions, 'save_motion', self.save_motion_callback)
     
     def save_motion_callback(self, request, response):
-        filename = 'motion/' + request.filename + '.txt'
+        filename = 'src/taller1/motion/' + request.filename + '.txt'
         response.path = abspath(filename)
         self.get_logger().info('Writing to file: ' + response.path)
 
@@ -42,7 +43,7 @@ class TurtleBotTeleop(Node):
         msg = Twist()
         if key.char == 'w':
             msg.linear.x=self.linear
-            self.get_logger().info('Publishing:  Adelante')
+            self.get_logger().info('Publishing: Adelante')
         elif key.char == 's':
             msg.linear.x=-self.linear
             self.get_logger().info('Publishing: Atras')
@@ -53,20 +54,27 @@ class TurtleBotTeleop(Node):
             msg.angular.z=-self.angular
             self.get_logger().info('Publishing: Derecha')
         else:
-            self.get_logger().info('Invalid input')
+            self.get_logger().info(f'Invalid input')
             return
-        
+
         self.publisher_.publish(msg)
-        self.motion += key.char
+
+        if self.lastStopped != 0:
+            timex = time.time() - self.lastStopped
+            self.motion += 'p=' + str(timex) + '\n' # p = pause
+        self.motion += key.char + '\n' # w = adelante, s = atras, a = izquierda, d = derecha
+        self.lastStopped = 0
 
     def on_release(self, key):
+        if not(hasattr(key, 'char')) or key.char not in ['w', 's', 'a', 'd']:
+            self.get_logger().info(f'Invalid input')
+            return
         msg = Twist()
         msg.linear.x=0.0
         msg.angular.z=0.0
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing: Stop')
-            
-        
+        self.lastStopped = time.time()
 
 
 def main(args=None):

@@ -133,12 +133,12 @@ def save_motion_thread(interface:TurtleBotInterface):
     request.filename = interface.user_text
     interface.get_logger().info('Calling service...')
     future = interface.client.call_async(request)
-    rclpy.spin_until_future_complete(interface, future)
+    #rclpy.spin_until_future_complete(interface, future)
 
-    if future.result() is not None:
-        interface.get_logger().info(f"Result saved at: {future.result().path}")
-    else:
-        interface.get_logger().info("Service call failed %r" % (future.exception(),))
+    #if future.result() is not None:
+    #    interface.get_logger().info(f"Result saved at: {future.result().path}")
+    #else:
+    #    interface.get_logger().info("Service call failed %r" % (future.exception(),))
 
 
 class Button:
