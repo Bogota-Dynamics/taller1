@@ -11,6 +11,7 @@
 
 Para poder ejecutar todos los pasos de este taller exitosamente, asegúrese de haber hecho primero los siguientes pasos:
 
+0. Tener instalado por completo ROS2 y haber creado un workspace.
 1. Instalar CoppeliaSim y reemplazar el archivo `libsimExtROS2.so` en la carpeta `utils`; poner a correr el archivo `coppeliaSim.sh` y abrir la escena `taller_1.ttt` de la carpeta `utils`.
 2. Descargar el paquete anexo `my_msgs` y ponerlo en la carpeta `src` del workspace.
 3. Construir ambos paquetes con los siguientes comandos en terminal (en la carpeta raíz del workspace):
