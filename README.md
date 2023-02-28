@@ -79,6 +79,7 @@ Este nodo implementa el servicio `recreate_motion`, por lo cual no se deplegará
 Posteriormente, reinicie la simulación en CoppeliaSim y en otra consola llame el servicio expuesto por el nodo player, en donde indicará el nombre del recorrido guardado que desea recrear (e.i. "Robot"). Para llamar el servicio ejecute el siguiente comando, reemplazando "Robot" por el nombre de la gráfica que tenía el recorrido que guardó.
 
 ```bash
+. install/setup.bash
 ros2 service call /recreate_motion my_msgs/srv/SaveMotions '{filename: "Robot"}'
 ```
 
